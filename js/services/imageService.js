@@ -1,11 +1,9 @@
-// js/services/imageService.js
-//const IMAGE_API = 'http://localhost:8080/api/image'; // Local
-const IMAGE_API = 'http://10.10.0.97:8080/api/image'; // Remoto
 
-// Sube una imagen y devuelve el JSON del backend: { message, url }
+const IMAGE_API = 'http://localhost:8080/api/image'; // Remoto
+
 export async function uploadImage(file) {
   const formData = new FormData();
-  formData.append('image', file); // Debe coincidir con @RequestParam("image")
+  formData.append('image', file); 
 
   const res = await fetch(`${IMAGE_API}/upload`, {
     method: 'POST',

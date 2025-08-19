@@ -1,6 +1,5 @@
 // js/controllers/productController.js
 
-// --- 1. Importamos servicios para comunicación con la API ---
 import {
   getProducts,
   createProduct,
@@ -11,32 +10,32 @@ import {
 import { getCategories } from "../services/categoryService.js";
 import { uploadImageToFolder } from "../services/imageService.js";
 
-// --- 2. Variables globales para la paginación ---
+
 let currentPage = 0;
 let currentSize = 10;
 
-// --- 3. Se ejecuta cuando el DOM está cargado ---
+
 document.addEventListener("DOMContentLoaded", () => {
   // Referencias a elementos del DOM
   const tableBody = document.querySelector("#itemsTable tbody");
   const form = document.getElementById("productForm");
-  const modal = new bootstrap.Modal(document.getElementById("itemModal")); // Bootstrap modal
+  const modal = new bootstrap.Modal(document.getElementById("itemModal")); 
   const modalLabel = document.getElementById("itemModalLabel");
   const btnAdd = document.getElementById("btnAdd");
   const select = document.getElementById("productCategory");
 
-  // Campos para manejo de imágenes
-  const imageFileInput = document.getElementById("productImageFile"); // Input type="file"
-  const imageUrlHidden = document.getElementById("productImageUrl"); // Campo hidden
-  const imagePreview = document.getElementById("productImagePreview"); // Preview <img>
 
-  // --- 4. Previsualizar imagen seleccionada ---
+  const imageFileInput = document.getElementById("productImageFile"); 
+  const imageUrlHidden = document.getElementById("productImageUrl"); 
+  const imagePreview = document.getElementById("productImagePreview"); 
+
+
   if (imageFileInput && imagePreview) {
     imageFileInput.addEventListener("change", () => {
       const file = imageFileInput.files?.[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = () => (imagePreview.src = reader.result); // Mostrar preview
+        reader.onload = () => (imagePreview.src = reader.result); 
         reader.readAsDataURL(file);
       } else {
         imagePreview.src = imageUrlHidden?.value || "";
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- 5. Selector de tamaño de página ---
+
   const sizeSelector = document.getElementById("pageSize");
   sizeSelector.addEventListener("change", () => {
     currentSize = parseInt(sizeSelector.value);
@@ -52,19 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarProductos();
   });
 
-  // --- 6. Botón "Agregar" resetea formulario y abre modal ---
+ 
   btnAdd.addEventListener("click", () => {
     limpiarFormulario();
     modalLabel.textContent = "Agregar Producto";
     modal.show();
   });
 
-  // --- 7. Submit del formulario (Crear/Actualizar producto) ---
+  
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let id = form.productId.value;
 
-    // --- 8. Manejo de imagen: usar valor actual o subir nueva ---
+    
     let finalImageUrl = imageUrlHidden?.value || "";
     const file = imageFileInput?.files?.[0];
     if (file) {
@@ -78,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // --- 9. Construcción del payload para enviar a API ---
+   
     const payload = {
       nombre: form.productName.value.trim(),
       precio: Number(form.productPrice.value),
@@ -86,11 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
       stock: Number(form.productStock.value),
       fechaIngreso: form.productDate.value,
       categoriaId: Number(form.productCategory.value),
-      usuarioId: 2, // Por ahora fijo
-      imagen_url: finalImageUrl || null, // Campo correcto según backend
+      usuarioId: 2, 
+      imagen_url: finalImageUrl || null, 
     };
 
-    // --- 10. Crear o actualizar producto ---
+
     try {
       if (id) {
         await updateProduct(id, payload);
@@ -105,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- 11. Función para cargar productos con paginación ---
+
   async function cargarProductos() {
     try {
       const data = await getProducts(currentPage, currentSize);
@@ -114,16 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
       tableBody.innerHTML = "";
       renderPagination(data.number, data.totalPages);
 
-      // --- 12. Renderizado de filas en la tabla ---
+      
       items.forEach((item) => {
         const tr = document.createElement("tr");
 
-        // ID
+        
         const tdId = document.createElement("td");
         tdId.textContent = item.id;
         tr.appendChild(tdId);
 
-        // Imagen
         const tdImg = document.createElement("td");
         if (item.imagen_url) {
           const img = document.createElement("img");
@@ -201,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 13. Cargar categorías para <select> ---
+
   async function cargarCategorias() {
     try {
       const categories = await getCategories();
@@ -226,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 14. Rellenar formulario para editar producto ---
+ 
   function setFormulario(item) {
     form.productId.value = item.id;
     form.productName.value = item.nombre;
@@ -244,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.show();
   }
 
-  // --- 15. Resetear formulario (al agregar nuevo producto) ---
+
   function limpiarFormulario() {
     form.reset();
     form.productId.value = "";
@@ -253,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (imageFileInput) imageFileInput.value = "";
   }
 
-  // --- 16. Eliminar producto por ID ---
+
   async function eliminarProducto(id) {
     try {
       await deleteProduct(id);
@@ -263,12 +261,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 17. Renderizado de paginación ---
+ 
   function renderPagination(current, totalPages) {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
 
-    // Botón Anterior
+   
     const prev = document.createElement("li");
     prev.className = `page-item ${current === 0 ? "disabled" : ""}`;
     const prevLink = document.createElement("a");
@@ -320,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pagination.appendChild(next);
   }
 
-  // --- 18. Cargar datos iniciales ---
+  
   cargarCategorias();
   cargarProductos();
 });
